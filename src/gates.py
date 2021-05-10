@@ -1,4 +1,6 @@
 from sympy.logic.boolalg import *
+
+
 class LogicGate:
 
     def __init__(self, label, n, type):
@@ -7,9 +9,7 @@ class LogicGate:
         self.output = None  # 0 or 1
         self.pins = [None] * n  # connectors
         self.isDiagnosis = 0
-        self.type=type
-
-
+        self.type = type
 
     def __eq__(self, other):
         return self.label == other.label
@@ -49,15 +49,13 @@ class LogicGate:
                 break
 
     def getLogicClause(self):
-        to_cnf()
-
-
+        # find how
 
 
 class AndGate(LogicGate):
 
     def __init__(self, label, n):
-        LogicGate.__init__(self, label, n,"AND")
+        LogicGate.__init__(self, label, n, "AND")
 
     def performGateLogic(self):
         inputs = [None] * self.num_of_inputs
@@ -78,15 +76,15 @@ class AndGate(LogicGate):
             return res
 
     def get_logic_clause(self):
-        gateName=self.label
+        gateName = self.label
 
-        gate_output=self.output
+        gate_output = self.output
 
 
 class NandGate(LogicGate):
 
     def __init__(self, label, n):
-        LogicGate.__init__(self, label, n,"NAND")
+        LogicGate.__init__(self, label, n, "NAND")
 
     def performGateLogic(self):
         inputs = [None] * self.num_of_inputs
@@ -108,7 +106,7 @@ class NandGate(LogicGate):
 class OrGate(LogicGate):
 
     def __init__(self, label, n):
-        LogicGate.__init__(self, label, n,"OR")
+        LogicGate.__init__(self, label, n, "OR")
 
     def performGateLogic(self):
         inputs = [None] * self.num_of_inputs
@@ -130,7 +128,7 @@ class OrGate(LogicGate):
 class XorGate(LogicGate):
 
     def __init__(self, label, n):
-        LogicGate.__init__(self, label, n,"XOR")
+        LogicGate.__init__(self, label, n, "XOR")
 
     def performGateLogic(self):
         ones = 0
@@ -155,7 +153,7 @@ class XorGate(LogicGate):
 class NorGate(LogicGate):
 
     def __init__(self, label, n):
-        LogicGate.__init__(self, label, n,"NOR")
+        LogicGate.__init__(self, label, n, "NOR")
 
     def performGateLogic(self):
         inputs = [None] * self.num_of_inputs
@@ -177,7 +175,7 @@ class NorGate(LogicGate):
 class InverterGate(LogicGate):
 
     def __init__(self, label):
-        LogicGate.__init__(self, label, 1,"NOT")
+        LogicGate.__init__(self, label, 1, "NOT")
 
     def performGateLogic(self):
         input = self.get_Nth_pin_value(0)
@@ -196,7 +194,7 @@ class InverterGate(LogicGate):
 class BufferGate(LogicGate):
 
     def __init__(self, label):
-        LogicGate.__init__(self, label, 1,'BUFFER')
+        LogicGate.__init__(self, label, 1, 'BUFFER')
 
     def performGateLogic(self):
         input = self.get_Nth_pin_value(0)
@@ -215,10 +213,10 @@ class BufferGate(LogicGate):
 
 class Connector:
 
-    def __init__(self, fgate, tgate,label):
+    def __init__(self, fgate, tgate, label):
         self.fromgate = fgate
         self.togate = tgate
-        self.label=label
+        self.label = label
 
         tgate.setNextPin(self)
 
@@ -236,8 +234,3 @@ class Connector:
 
     def getLabel(self):
         return self.label
-
-
-
-
-
