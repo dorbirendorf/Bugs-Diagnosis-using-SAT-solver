@@ -12,9 +12,9 @@ class Circuit:
         self.gates = gates
         self.gates_info = gates_info
         self.input_valuesDic = InputValuesToDic(input_values, gates_info)  # 1 or 0 for input empty list for connctors
-
-        initInputs(gates, self.input_valuesDic)  # add the inputs i1-in to the circuit
         self.addConnctorsToLastGates()
+        self.initInputs()  # add the inputs i1-in to the circuit
+
 
 
     def get_gates(self):
@@ -53,6 +53,19 @@ class Circuit:
                 gate=findGateByName(self.get_gates(),gate_info['name'])
                 c=Connector(gate,gate_info["output"],'C'+gate_info["output"])
                 self.connectors.append(c)
+
+        # add the inputs i1-in to the system
+    def initInputs(self):
+        i=0
+        for gateName in self.input_valuesDic:
+            inputVals = self.input_valuesDic[gateName]
+            if inputVals:
+                gate = findGateByName(self.gates, gateName)
+                for i in range(len(gate.pins)):
+                    if not gate.pins[i]:  # if None, insert input. otherwise, there is already a connector
+                        c=Connector(inputVals.pop(),gate,"i"+str(i))
+                        gate.pins[i] = c
+
 
 
 
@@ -153,13 +166,4 @@ def InputValuesToDic(input_values, gatesinfo):
     return inputsDic
 
 
-# add the inputs i1-in to the system
-def initInputs(gates, input_valuesDic):
-    for gateName in input_valuesDic:
-        inputVals = input_valuesDic[gateName]
-        if inputVals:
-            gate = findGateByName(gates, gateName)
-            for i in range(len(gate.pins)):
-                if not gate.pins[i]:  # if None, insert input. otherwise, there is already a connector
-                    gate.pins[i] = inputVals.pop()
 
