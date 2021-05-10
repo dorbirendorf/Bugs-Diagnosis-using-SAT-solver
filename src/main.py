@@ -159,8 +159,11 @@ if __name__ == "__main__":
             (system, index, input_obs, output_obs) = res
 
             cir = Circuit(system_name, input_obs)
-            for c   in cir.get_connectors():
-                print(c)
+            for gate in cir.get_gates():
+                output_connector=cir.getOutputConnectorByGate(gate)
+                gate.get_logic_clause(output_connector)
+
+
 
 
 

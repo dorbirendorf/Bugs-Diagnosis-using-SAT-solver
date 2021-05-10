@@ -5,12 +5,17 @@ from src.parse import *
 
 class Circuit:
     def __init__(self, filename, input_values):
-        (connectors, gates, gates_info) = buildCircuit(filename)
+
+        (connectors, gates, gates_info,component_to_num) = buildCircuit(filename)
+        self.component_to_num=component_to_num
         self.connectors = connectors
         self.gates = gates
         self.gates_info = gates_info
         self.input_valuesDic = InputValuesToDic(input_values, gates_info)  # 1 or 0 for input empty list for connctors
+
         initInputs(gates, self.input_valuesDic)  # add the inputs i1-in to the circuit
+        self.addConnctorsToLastGates()
+
 
     def get_gates(self):
         return self.gates
@@ -34,22 +39,39 @@ class Circuit:
 
         val_list = list(outputs.values())
         return val_list
+    def getOutputConnectorByGate(self,gate):
+        for c in self.get_connectors():
+            if c.getFrom().getLabel()==gate.getLabel():
+                return c
+        return None
+
+
+    def addConnctorsToLastGates(self):
+        gates_info=self.get_gates_info()
+        for gate_info in gates_info:
+            if gate_info["output"][0]=='o':
+                gate=findGateByName(self.get_gates(),gate_info['name'])
+                c=Connector(gate,gate_info["output"],'C'+gate_info["output"])
+                self.connectors.append(c)
+
 
 
 def buildCircuit(fileName):
     (system_name, inputs, outputs, gates_info) = parse_system(fileName)
-    """print('building circuit for system:', system_name)
-    print("inputs",inputs)
-    print("outputs",outputs)
-    print(gates_info) """
+
+    component_to_num={}
+    counter=0
+
 
     gates = list()
     for gate_info in gates_info:
         g = createGate(gate_info)
+        component_to_num[gate_info["name"]]=counter
+        counter+=1
         gates.append(g)
 
-    (connectors, gates) = conncetCircuit(gates, gates_info)
-    return (connectors, gates, gates_info)
+    (connectors, gates,component_to_num) = conncetCircuit(gates, gates_info,counter,component_to_num)
+    return (connectors, gates, gates_info,component_to_num)
 
 
 def split_vals(word):
@@ -82,7 +104,7 @@ def createGate(gate_info):
 
 
 # add conncetors and connect the gates
-def conncetCircuit(gates, gates_info):
+def conncetCircuit(gates, gates_info,counter,component_to_num):
     connectors = list()
     i=0
     for gate_info in gates_info:
@@ -93,8 +115,10 @@ def conncetCircuit(gates, gates_info):
         for target in tatgetGates:
             c = Connector(fromGate, target,'C'+str(i))
             connectors.append(c)
+            component_to_num[c.getLabel()]=counter
+            counter+=1
             i+=1
-    return (connectors, gates)
+    return (connectors, gates,component_to_num)
 
 
 def findGateByName(gates, name):
@@ -138,3 +162,4 @@ def initInputs(gates, input_valuesDic):
             for i in range(len(gate.pins)):
                 if not gate.pins[i]:  # if None, insert input. otherwise, there is already a connector
                     gate.pins[i] = inputVals.pop()
+

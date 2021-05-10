@@ -1,4 +1,4 @@
-from sympy.logic.boolalg import *
+from sympy import *
 
 
 class LogicGate:
@@ -23,12 +23,19 @@ class LogicGate:
     def getLabel(self):
         return self.label
 
+    def getPins(self):
+        return self.pins
+
+    def getPin(self,n):
+        return self.pins[n]
+
     def getType(self):
         return self.type
 
     def getOutput(self):
         self.output = self.performGateLogic()
         return self.output
+
 
     def get_Nth_pin_value(self, n):
         if not isinstance(self.pins[n], int):
@@ -48,8 +55,13 @@ class LogicGate:
                 self.pins[i] = source
                 break
 
-    def getLogicClause(self):
-        # find how
+
+    def get_logic_clause(self,output_connector):
+        gateName = self.label               # will apeare in every list
+        output=output_connector.getLabel()  # left side of iff
+        inputs=self.getPins()
+        print(gateName,output,inputs)
+
 
 
 class AndGate(LogicGate):
@@ -75,10 +87,6 @@ class AndGate(LogicGate):
 
             return res
 
-    def get_logic_clause(self):
-        gateName = self.label
-
-        gate_output = self.output
 
 
 class NandGate(LogicGate):
@@ -217,8 +225,11 @@ class Connector:
         self.fromgate = fgate
         self.togate = tgate
         self.label = label
+        if not isinstance(tgate, str):
+            tgate.setNextPin(self)
+        else:
+            self.tgate=tgate
 
-        tgate.setNextPin(self)
 
     def __eq__(self, other):
         return self.fromgate == other.fromgate and self.togate == other.togate
@@ -234,3 +245,8 @@ class Connector:
 
     def getLabel(self):
         return self.label
+
+
+
+
+
